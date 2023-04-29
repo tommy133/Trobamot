@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Iterator;
+
 public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
     private int lengthWord = 5;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
     private int heightDisplay;
+    private UnsortedArraySet letters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,28 +79,82 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void crearTeclat() {
+        initAlphabet();
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
 
-        // Crear el botó
+        // Botó esborrar
         Button buttonEsborrar = new Button(this);
         buttonEsborrar.setText("Esborrar");
+        //Botó enviar
+        Button buttonEnviar = new Button(this);
+        buttonEnviar.setText("Enviar");
         // Posicionar el botó
-        int buttonWidth = 400;
-        int buttonHeight = 200;
+        int buttonWidth = 250;
+        int buttonHeight = 100;
+        int buttonKeyboardWidth = 250;
+        int buttonKeyboardHeight = 100;
         ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
         params.height = buttonHeight;
         params.width = buttonWidth;
         buttonEsborrar.setLayoutParams(params);
-        buttonEsborrar.setY(heightDisplay - 100 - buttonHeight);
-        buttonEsborrar.setX(widthDisplay/2 - buttonWidth/2);
+        buttonEsborrar.setY(heightDisplay -400 - buttonHeight);
+        buttonEsborrar.setX(widthDisplay/2 -100 - buttonWidth/2);
+
+        buttonEnviar.setLayoutParams(params);
+        buttonEnviar.setY(heightDisplay -400 - buttonHeight);
+        buttonEnviar.setX(widthDisplay/2 -50 + buttonWidth/2);
         // Afegir el botó al layout
         constraintLayout.addView(buttonEsborrar);
+        constraintLayout.addView(buttonEnviar);
+
+
         // Afegir la funcionalitat al botó
         buttonEsborrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("Esborrar!");
             }
         });
+        buttonEnviar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println("Enviar!");
+            }
+        });
+
+        Iterator<Character> it = letters.iterator();
+        int row = 1;
+        int col = 0;
+        while (it.hasNext()) {
+            char c = it.next();
+            Button button = new Button(this);
+            button.setText(Character.toString(c));
+            button.setLayoutParams(params);
+            button.setX(col * buttonKeyboardWidth);
+            button.setY(row * buttonKeyboardHeight);
+            constraintLayout.addView(button);
+
+            col++;
+            if (col >= 10) {  // Cambiar de fila después de 10 botones
+                col = 0;
+                row++;
+            }
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    String text = ((Button) v).getText().toString();
+
+                }
+            });
+        }
+
+    }
+
+
+    private void initAlphabet(){
+        letters = new UnsortedArraySet(26);
+
+        for (int i=65; i<65+26;i++){
+            char l = (char) i;
+            letters.add(l);
+        }
     }
 
     private void hideSystemUI() {
