@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
     private int heightDisplay;
-    private UnsortedArraySet letters;
+    private UnsortedArrayMapping letters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,21 +61,25 @@ public class MainActivity extends AppCompatActivity {
 
         int textViewSize = 150;
 
-        // Crear un TextView
-        TextView textView = new TextView(this);
-        textView.setText("A");
-        textView.setBackground(gd);
-        textView.setId(0);
-        textView.setWidth(textViewSize);
-        textView.setHeight(textViewSize);
-        // Posicionam el TextView
-        textView.setX(widthDisplay/2 - textViewSize/2);
-        textView.setY(heightDisplay/2 - textViewSize/2);
-        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        textView.setTextColor(Color.RED);
-        textView.setTextSize(30);
-        // Afegir el TextView al layout
-        constraintLayout.addView(textView);
+        for (int i=0; i < maxTry; i++){
+            for (int j=0; j < lengthWord; j++){
+                // Crear un TextView
+                TextView textView = new TextView(this);
+                textView.setBackground(gd);
+                textView.setId(Integer.valueOf(i+""+j));
+                textView.setWidth(textViewSize);
+                textView.setHeight(textViewSize);
+                // Posicionam el TextView
+                textView.setX((widthDisplay/3 - textViewSize/2)+j*textViewSize);
+                textView.setY((heightDisplay/2 - textViewSize/2)+i*textViewSize);
+                textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                textView.setTextColor(Color.RED);
+                textView.setTextSize(30);
+                // Afegir el TextView al layout
+                constraintLayout.addView(textView);
+            }
+        }
+
     }
 
     private void crearTeclat() {
@@ -120,13 +124,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Iterator<Character> it = letters.iterator();
+        Iterator<String> it = letters.iterator();
         int row = 1;
         int col = 0;
         while (it.hasNext()) {
-            char c = it.next();
+            String l = it.next();
             Button button = new Button(this);
-            button.setText(Character.toString(c));
+            button.setText(l);
             button.setLayoutParams(params);
             button.setX(col * buttonKeyboardWidth);
             button.setY(row * buttonKeyboardHeight);
@@ -140,7 +144,10 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     String text = ((Button) v).getText().toString();
-
+                    String id = 0 +""+ 1 ; //remove hardcoding
+                    TextView textView = findViewById(Integer.valueOf(id).intValue());
+                    textView.setText(text);
+                    //link position in mapping
                 }
             });
         }
@@ -149,11 +156,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initAlphabet(){
-        letters = new UnsortedArraySet(26);
+        letters = new UnsortedArrayMapping<String, UnsortedLinkedListSet<String>>(26);
 
         for (int i=65; i<65+26;i++){
             char l = (char) i;
-            letters.add(l);
+            letters.put(Character.toString(l), new UnsortedLinkedListSet<String>());
         }
     }
 
