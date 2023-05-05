@@ -37,6 +37,25 @@ public class UnsortedLinkedListSet <E> {
         }
         return !trobat;
     }
+
+    public boolean remove(E elem) {
+        Node p = first; Node pp = null; boolean trobat = false;
+        while (p != null && !trobat) {
+            trobat = p.elem.equals(elem);
+            if (!trobat) {
+                pp = p;
+                p = p.next;
+            }
+        }
+        if (trobat) {
+            if (pp == null) {
+                first = p.next;
+            } else {
+                pp.next = p.next;
+            }
+        }
+        return trobat;
+    }
     public Iterator iterator() {return new IteratorUnsortedLinkedListSet();}
     private class IteratorUnsortedLinkedListSet implements Iterator {
         private Node idxIterator;
