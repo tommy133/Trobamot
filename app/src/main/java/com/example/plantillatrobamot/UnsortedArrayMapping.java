@@ -8,6 +8,14 @@ public class UnsortedArrayMapping<K, V> {
     private V[] values;
     private int size;
 
+    protected class Pair {
+        private K key;
+        private V value;
+        private Pair(K key, V value) {}
+        public K getKey() {return key;}
+        public V getValue() {return value;}
+    }
+
     public UnsortedArrayMapping(int capacity) {
         this.keys = (K[]) new Object[capacity];
         this.values = (V[]) new Object[capacity];
@@ -24,16 +32,19 @@ public class UnsortedArrayMapping<K, V> {
     }
 
     public V put(K key, V value) {
-        for (int i = 0; i < size; i++) {
-            if (keys[i].equals(key)) {
-                V oldValue = values[i];
-                values[i] = value;
-                return oldValue;
+        if (size < keys.length){
+            for (int i = 0; i < size; i++) {
+                if (keys[i].equals(key)) {
+                    V oldValue = values[i];
+                    values[i] = value;
+                    return oldValue;
+                }
             }
+            keys[size] = key;
+            values[size] = value;
+            size++;
         }
-        keys[size] = key;
-        values[size] = value;
-        size++;
+
         return null;
     }
 
@@ -41,20 +52,22 @@ public class UnsortedArrayMapping<K, V> {
         return size == 0;
     }
 
+    public Iterator iterator() {return new UnsortedArrayMapping.IteratorUnsortedLinkedListMapping();}
 
-    public Iterator<K> iterator() {
-        return new Iterator<K>() {
+    private class IteratorUnsortedLinkedListMapping implements Iterator{
             private int currentIndex = 0;
 
-            @Override
+
             public boolean hasNext() {
                 return currentIndex < size && keys[currentIndex] != null;
             }
 
-            @Override
-            public K next() {
-                return keys[currentIndex++];
+
+            public Object next() {
+                Pair p = new Pair(keys[currentIndex], values[currentIndex]);
+                currentIndex++;
+                return p;
             }
-        };
+
     }
 }
