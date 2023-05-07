@@ -51,6 +51,23 @@ public class UnsortedArrayMapping<K, V> {
         return null;
     }
 
+    public V remove(K key) {
+        for (int i = 0; i < size; i++) {
+            if (keys[i].equals(key)) {
+                V removedValue = values[i];
+                // Move the last element to fill the gap
+                keys[i] = keys[size-1];
+                values[i] = values[size-1];
+                keys[size-1] = null;
+                values[size-1] = null;
+                size--;
+                return removedValue;
+            }
+        }
+        return null;
+    }
+
+
     public boolean isEmpty() {
         return size == 0;
     }
