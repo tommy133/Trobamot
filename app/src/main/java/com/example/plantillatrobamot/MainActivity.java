@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     private int lengthWord = 5;
     private int maxTry = 6;
 
+    private int highlightedRow = 0;
+    private int highlightedColumn = 0;
+
     // Variables de construcció de la interfície
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
@@ -142,12 +145,18 @@ public class MainActivity extends AppCompatActivity {
                 col = 0;
                 row++;
             }
+
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     String text = ((Button) v).getText().toString();
-                    String id = 0 +""+ 1 ; //remove hardcoding
+                    String id = highlightedRow + "" +highlightedColumn ;
                     TextView textView = findViewById(Integer.valueOf(id).intValue());
                     textView.setText(text);
+                    highlightedColumn++;
+                    if (highlightedColumn >= lengthWord) {
+                        highlightedColumn = 0;
+                        highlightedRow++;
+                    }
                     //link position in mapping
                 }
             });
@@ -157,11 +166,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initAlphabet(){
-        letters = new UnsortedArrayMapping<String, UnsortedLinkedListSet<String>>(26);
+        letters = new UnsortedArrayMapping<String, UnsortedLinkedListSet<Integer>>(26);
 
         for (int i=65; i<65+26;i++){
             char l = (char) i;
-            letters.put(Character.toString(l), new UnsortedLinkedListSet<String>());
+            letters.put(Character.toString(l), new UnsortedLinkedListSet<Integer>());
         }
     }
 
