@@ -118,7 +118,20 @@ public class MainActivity extends AppCompatActivity {
         // Afegir la funcionalitat al botó
         buttonEsborrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("Esborrar!");
+                highlightedColumn--;
+                if (highlightedColumn < 0) {
+                    highlightedColumn = lengthWord;
+                    highlightedRow--;
+                }
+                String id = highlightedRow + "" +highlightedColumn ;
+                TextView textView = findViewById(Integer.valueOf(id).intValue());
+                String letter = (String) textView.getText();
+                textView.setText("");
+
+                //delete position in mapping
+                UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
+                set.remove(Integer.valueOf(id).intValue());
+                letters.put(letter, set);
             }
         });
         buttonEnviar.setOnClickListener(new View.OnClickListener() {
