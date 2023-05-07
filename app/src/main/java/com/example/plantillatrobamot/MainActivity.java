@@ -124,11 +124,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Iterator<String> it = letters.iterator();
+        Iterator<UnsortedArrayMapping.Pair> it = letters.iterator();
         int row = 1;
         int col = 0;
         while (it.hasNext()) {
-            String l = it.next();
+            UnsortedArrayMapping.Pair p =  it.next();
+            String l = (String) p.getKey();
             Button button = new Button(this);
             button.setText(l);
             button.setLayoutParams(params);
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             constraintLayout.addView(button);
 
             col++;
-            if (col >= 10) {  // Cambiar de fila después de 10 botones
+            if (col >= 10) {
                 col = 0;
                 row++;
             }
