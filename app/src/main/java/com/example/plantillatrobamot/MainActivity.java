@@ -152,12 +152,16 @@ public class MainActivity extends AppCompatActivity {
                     String id = highlightedRow + "" +highlightedColumn ;
                     TextView textView = findViewById(Integer.valueOf(id).intValue());
                     textView.setText(text);
+
                     highlightedColumn++;
                     if (highlightedColumn >= lengthWord) {
                         highlightedColumn = 0;
                         highlightedRow++;
                     }
                     //link position in mapping
+                    UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(text);
+                    set.add(Integer.valueOf(id).intValue());
+                    letters.put(text, set);
                 }
             });
         }
