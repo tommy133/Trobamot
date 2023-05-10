@@ -125,18 +125,29 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String id = highlightedRow + "" +highlightedColumn ;
                 TextView textView = findViewById(Integer.valueOf(id).intValue());
-                String letter = (String) textView.getText();
-                textView.setText("");
+                if (textView!=null){
+                    String letter = (String) textView.getText();
+                    textView.setText("");
 
-                //delete position in mapping
-                UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
-                set.remove(Integer.valueOf(id).intValue());
-                letters.put(letter, set);
+                    //delete position in mapping
+                    UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
+                    set.remove(Integer.valueOf(id).intValue());
+                    letters.put(letter, set);
+                }
+
             }
         });
         buttonEnviar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("Enviar!");
+                if (!isLongOk()){
+                    System.out.println("ERROR TE FALTEN LLETRES TT");
+                } else if (isParaula()) {
+                    //FI DE JOC
+                } else if (isValid()){
+
+                } else {
+                    System.out.println("PARAULA NO VALIDA");
+                }
             }
         });
 
@@ -162,7 +173,8 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     String text = ((Button) v).getText().toString();
-                    String id = highlightedRow + "" +highlightedColumn ;
+                    String id = highlightedRow + "" +highlightedColumn ;                System.out.println(id);
+
                     TextView textView = findViewById(Integer.valueOf(id).intValue());
                     textView.setText(text);
 
@@ -180,6 +192,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    //comprova longitud de la paraula enviada
+    private boolean isLongOk(){
+        return highlightedColumn==0 & highlightedRow > 0;
+    }
+
+    private boolean isParaula(){return true;}
+    //hashing
+    private boolean isValid(){return true;}
 
 
     private void initAlphabet(){
