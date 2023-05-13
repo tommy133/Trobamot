@@ -12,6 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int widthDisplay;
     private int heightDisplay;
     private UnsortedArrayMapping letters;
+    private  BSTSet treeSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,12 @@ public class MainActivity extends AppCompatActivity {
         heightDisplay = metrics.heightPixels;
 
         crearInterficie();
+        try {
+            iniciarDiccionari();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -144,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (isParaula()) {
                     //FI DE JOC
                 } else if (isValid()){
-
+                    System.out.println("HEM TROBAT PARAULA VÁLIDA");
                 } else {
                     System.out.println("PARAULA NO VALIDA");
                 }
@@ -192,14 +203,44 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    public void iniciarDiccionari() throws IOException {
+        InputStream is = getResources().openRawResource(R.raw.paraules) ;
+        BufferedReader r = new BufferedReader (new InputStreamReader(is)) ;
+        treeSet= new BSTSet<String>();
+        String s=r.readLine();
+        String processed;
+        while(s != null){
+            processed = s.split(";")[1];
+            treeSet.add(processed);
+            s=r.readLine();
+
+        }
+
+        r.close();
+    }
     //comprova longitud de la paraula enviada
     private boolean isLongOk(){
         return highlightedColumn==0 & highlightedRow > 0;
     }
 
-    private boolean isParaula(){return true;}
+    private boolean isParaula(){return false;}
     //hashing
-    private boolean isValid(){return true;}
+    private boolean isValid(){
+        String input = getWordSent().toLowerCase();
+        return treeSet.contains(input);
+    }
+
+    private String getWordSent(){ //suposam que té la llargàriar adecuada
+        String s="";
+        int row = highlightedRow - 1;
+        for (int i=0; i < lengthWord; i++){
+            String id = row + "" +i ;
+            TextView textView = findViewById(Integer.valueOf(id).intValue());
+            s += textView.getText();
+        }
+        return s;
+    }
 
 
     private void initAlphabet(){
