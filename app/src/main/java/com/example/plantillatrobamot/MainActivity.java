@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
     private int lengthWord = 5;
     private int maxTry = 6;
-    private String guess = "ACABA";
+    private String guess = "CABLE";
 
     private int highlightedRow = 0;
     private int highlightedColumn = 0;
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 textView.setX((widthDisplay/3 - textViewSize/2)+j*textViewSize);
                 textView.setY((heightDisplay/2 - textViewSize/2)+i*textViewSize);
                 textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-                textView.setTextColor(Color.RED);
+                textView.setTextColor(Color.BLACK);
                 textView.setTextSize(30);
                 // Afegir el TextView al layout
                 constraintLayout.addView(textView);
@@ -110,16 +110,16 @@ public class MainActivity extends AppCompatActivity {
         // Posicionar el botó
         int buttonWidth = 250;
         int buttonHeight = 100;
-        int buttonKeyboardWidth = 250;
+        int buttonKeyboardWidth = 100;
         int buttonKeyboardHeight = 100;
-        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-        params.height = buttonHeight;
-        params.width = buttonWidth;
-        buttonEsborrar.setLayoutParams(params);
+        ConstraintLayout.LayoutParams paramsControlBtn = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        paramsControlBtn.height = buttonHeight;
+        paramsControlBtn.width = buttonWidth;
+        buttonEsborrar.setLayoutParams(paramsControlBtn);
         buttonEsborrar.setY(heightDisplay -400 - buttonHeight);
         buttonEsborrar.setX(widthDisplay/2 -100 - buttonWidth/2);
 
-        buttonEnviar.setLayoutParams(params);
+        buttonEnviar.setLayoutParams(paramsControlBtn);
         buttonEnviar.setY(heightDisplay -400 - buttonHeight);
         buttonEnviar.setX(widthDisplay/2 -50 + buttonWidth/2);
         // Afegir el botó al layout
@@ -170,8 +170,11 @@ public class MainActivity extends AppCompatActivity {
             UnsortedArrayMapping.Pair p =  it.next();
             String l = (String) p.getKey();
             Button button = new Button(this);
+            ConstraintLayout.LayoutParams paramsKeyboardBtn = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+            paramsKeyboardBtn.height = buttonKeyboardHeight;
+            paramsKeyboardBtn.width = buttonKeyboardWidth;
             button.setText(l);
-            button.setLayoutParams(params);
+            button.setLayoutParams(paramsKeyboardBtn);
             button.setX(col * buttonKeyboardWidth);
             button.setY(row * buttonKeyboardHeight);
             constraintLayout.addView(button);
@@ -185,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     String text = ((Button) v).getText().toString();
-                    String id = highlightedRow + "" +highlightedColumn ;                System.out.println(id);
+                    String id = highlightedRow + "" +highlightedColumn ;
 
                     TextView textView = findViewById(Integer.valueOf(id).intValue());
                     textView.setText(text);
@@ -247,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
             char l = (char) i;
             letters.put(Character.toString(l), getPositionsLetter(l));
         }
-
     }
     //retorna la llista enllaçada amb les posicions de la lletra a endevinar o una llista buida
     private UnsortedLinkedListSet<Integer> getPositionsLetter(char l){
