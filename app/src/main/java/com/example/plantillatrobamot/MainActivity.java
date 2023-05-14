@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     //FI DE JOC
                 } else if (isValid()){
                     System.out.println("HEM TROBAT PARAULA VÁLIDA");
+                    descobrirPistes();
                 } else {
                     System.out.println("PARAULA NO VALIDA");
                 }
@@ -225,12 +226,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isParaula(){return false;}
-    //hashing
     private boolean isValid(){
         String input = getWordSent().toLowerCase();
         return treeSet.contains(input);
     }
-
+    private void descobrirPistes(){
+        String letter="";
+        int row = highlightedRow - 1;
+        for (int i=0; i < lengthWord; i++){
+            String id = row + "" +i ;
+            TextView textView = findViewById(Integer.valueOf(id).intValue());
+            letter = ""+textView.getText();
+            UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
+            if (set.isEmpty()){
+                System.out.println("LA LLETRA "+letter+" NO TÉ POSICIÓ ASSOCIADA");
+                textView.setBackgroundColor(Color.RED);
+            } else if (set.contains(i+1)){
+                System.out.println("LA LLETRA "+letter+" TÉ LA POSICIÓ ASSOCIADA "+i);
+                textView.setBackgroundColor(Color.GREEN);
+            } else {
+                System.out.println("LA LLETRA ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
+                textView.setBackgroundColor(Color.YELLOW);
+            }
+        }
+    }
     private String getWordSent(){ //suposam que té la llargàriar adecuada
         String s="";
         int row = highlightedRow - 1;
