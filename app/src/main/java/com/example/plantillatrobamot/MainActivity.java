@@ -155,13 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 String id = highlightedRow + "" +highlightedColumn ;
                 TextView textView = findViewById(Integer.valueOf(id).intValue());
                 if (textView!=null){
-                    String letter = (String) textView.getText();
                     textView.setText("");
-
-                    //delete position in mapping
-                    UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
-                    set.remove(Integer.valueOf(id).intValue());
-                    letters.put(letter, set);
                 }
 
             }
