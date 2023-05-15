@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void crearTeclat() {
         initAlphabet();
+        setPositionsGuessLetters();
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
 
         // Botó esborrar
@@ -286,19 +287,18 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i=65; i<65+26;i++){
             char l = (char) i;
-            letters.put(Character.toString(l), getPositionsLetter(l));
+            letters.put(Character.toString(l), new UnsortedLinkedListSet<Integer>());
         }
     }
     //retorna la llista enllaçada amb les posicions de la lletra a endevinar o una llista buida
-    private UnsortedLinkedListSet<Integer> getPositionsLetter(char l){
+    private void setPositionsGuessLetters(){
         char [] guessLetters = guess.toCharArray();
-        UnsortedLinkedListSet<Integer> linkedList =  new UnsortedLinkedListSet<Integer>();
         for (int i=0; i < guessLetters.length; i++){
-            if (guessLetters[i] == l){
-                linkedList.add(i+1);
-            }
+            String letter = String.valueOf(guessLetters[i]);
+            UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
+            set.add(i+1);
+            letters.put(letter, set);
         }
-        return linkedList;
     }
     private void hideSystemUI() {
         // Enables regular immersive mode.
