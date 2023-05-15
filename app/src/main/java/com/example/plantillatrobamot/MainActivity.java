@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int highlightedRow = 0;
     private int highlightedColumn = 0;
+    private final int textViewSize = 150;
 
     // Variables de construcció de la interfície
     public static String grayColor = "#D9E1E8";
@@ -47,11 +48,7 @@ public class MainActivity extends AppCompatActivity {
         heightDisplay = metrics.heightPixels;
 
         crearInterficie();
-        try {
-            iniciarDiccionari();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
     }
 
@@ -64,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private void crearInterficie() {
         crearGraella();
         crearTeclat();
+        crearNombreSol();
     }
 
     private void crearGraella() {
@@ -73,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
         GradientDrawable gd = new GradientDrawable();
         gd.setCornerRadius(5);
         gd.setStroke(3, Color.parseColor(grayColor));
-
-        int textViewSize = 150;
 
         for (int i=0; i < maxTry; i++){
             for (int j=0; j < lengthWord; j++){
@@ -95,6 +91,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    private void crearNombreSol(){
+        ConstraintLayout constraintLayout = findViewById(R.id.layout);
+        TextView textView = new TextView(this);
+        textView.setId(0);
+        textView.setWidth(textViewSize*2);
+        textView.setHeight(textViewSize);
+        textView.setX((widthDisplay/3 - textViewSize/2)+textViewSize);
+        textView.setY((heightDisplay/2 - textViewSize/2)+textViewSize);
+        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+
+        //textView.setTextSize(30);
+        textView.setText("Hi ha 5058 solucions disponibles");
+        // Afegir el TextView al layout
+        constraintLayout.addView(textView);
     }
 
     private void crearTeclat() {
