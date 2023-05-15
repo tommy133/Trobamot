@@ -48,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
         heightDisplay = metrics.heightPixels;
 
         crearInterficie();
-
+        try {
+            iniciarDiccionari();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -225,7 +229,10 @@ public class MainActivity extends AppCompatActivity {
         String processed;
         while(s != null){
             processed = s.split(";")[1];
-            treeSet.add(processed);
+            if (processed.length() == lengthWord){
+                treeSet.add(processed);
+            }
+
             s=r.readLine();
 
         }
