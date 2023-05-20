@@ -16,13 +16,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
     private int lengthWord = 5;
     private int maxTry = 6;
-    private String guess = "CABLE";
+
+    private int id_nsol = Integer.valueOf(maxTry+""+lengthWord);
+    private String guess = "BLANA";
 
     private int highlightedRow = 0;
     private int highlightedColumn = 0;
@@ -32,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
     private int heightDisplay;
-    private UnsortedArrayMapping letters;
-    private  BSTSet treeSet;
+    private UnsortedArrayMapping letters, restrictions;
+    private HashMap<String, String> wordMap ; //clau paraula sense accents, valor paraula amb accents
+    private HashSet<String> possibleSol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +52,12 @@ public class MainActivity extends AppCompatActivity {
         widthDisplay = metrics.widthPixels;
         heightDisplay = metrics.heightPixels;
 
-        crearInterficie();
         try {
             iniciarDiccionari();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        crearInterficie();
     }
 
     @Override
@@ -94,13 +98,19 @@ public class MainActivity extends AppCompatActivity {
                 constraintLayout.addView(textView);
             }
         }
-
+        /*
+        //Highlighteam sa primera casella
+        String id = highlightedRow + "" +highlightedColumn ;
+        TextView textView = findViewById(Integer.valueOf(id).intValue());
+        GradientDrawable gdFirst = (GradientDrawable) textView.getBackground();
+        gdFirst.setStroke(3, Color.YELLOW);
+        System.out.println("TAMARE");*/
     }
 
     private void crearNombreSol(){
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
         TextView textView = new TextView(this);
-        textView.setId(0);
+        textView.setId(id_nsol);
         textView.setWidth(textViewSize*2);
         textView.setHeight(textViewSize);
         textView.setX((widthDisplay/3 - textViewSize/2)+textViewSize);
@@ -108,9 +118,13 @@ public class MainActivity extends AppCompatActivity {
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
         //textView.setTextSize(30);
-        textView.setText("Hi ha 5058 solucions disponibles");
+        textView.setText("Hi ha "+possibleSol.size()+" solucions disponibles");
         // Afegir el TextView al layout
         constraintLayout.addView(textView);
+    }
+    private void updateViewNombreSol(){
+        TextView textView = findViewById(id_nsol);
+        textView.setText("Hi ha "+possibleSol.size()+" solucions disponibles");
     }
 
     private void crearTeclat() {
@@ -168,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                     //FI DE JOC
                 } else if (isValid()){
                     System.out.println("HEM TROBAT PARAULA VÁLIDA");
-                    descobrirPistes();
+                    descobrirRestriccions();
                 } else {
                     System.out.println("PARAULA NO VALIDA");
                 }
@@ -219,13 +233,17 @@ public class MainActivity extends AppCompatActivity {
     public void iniciarDiccionari() throws IOException {
         InputStream is = getResources().openRawResource(R.raw.paraules) ;
         BufferedReader r = new BufferedReader (new InputStreamReader(is)) ;
-        treeSet= new BSTSet<String>();
+        wordMap = new HashMap<>();
+        possibleSol = new HashSet<>();
         String s=r.readLine();
-        String processed;
+        String withoutAccents;
+        String withAccents;
         while(s != null){
-            processed = s.split(";")[1];
-            if (processed.length() == lengthWord){
-                treeSet.add(processed);
+            withAccents = s.split(";")[0];
+            withoutAccents = s.split(";")[1];
+            if (withoutAccents.length() == lengthWord){
+                wordMap.put(withoutAccents, withAccents);
+                possibleSol.add(withAccents);
             }
 
             s=r.readLine();
@@ -242,9 +260,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isParaula(){return false;}
     private boolean isValid(){
         String input = getWordSent().toLowerCase();
-        return treeSet.contains(input);
+        return wordMap.containsKey(input);
     }
-    private void descobrirPistes(){
+    private void descobrirRestriccions(){
         String letter="";
         int row = highlightedRow - 1;
         for (int i=0; i < lengthWord; i++){
@@ -253,16 +271,41 @@ public class MainActivity extends AppCompatActivity {
             letter = ""+textView.getText();
             UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
             if (set.isEmpty()){
-                System.out.println("LA LLETRA "+letter+" NO TÉ POSICIÓ ASSOCIADA");
+                updatePossibleSol(letter, false, i);
+                System.out.println("LA LLETRA "+letter+" NO ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
                 textView.setBackgroundColor(Color.RED);
             } else if (set.contains(i+1)){
+                updatePossibleSol(letter, true, i);
+
                 System.out.println("LA LLETRA "+letter+" TÉ LA POSICIÓ ASSOCIADA "+i);
                 textView.setBackgroundColor(Color.GREEN);
+
             } else {
+                updatePossibleSol(letter, true, -1);
                 System.out.println("LA LLETRA ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
                 textView.setBackgroundColor(Color.YELLOW);
             }
         }
+        updateViewNombreSol();
+    }
+    private void updatePossibleSol(String letter, boolean isContained, int pos){
+        Iterator<String> it = possibleSol.iterator();
+
+            while (it.hasNext()) {
+                String word = it.next();
+                if (pos != -1) {
+                    if (isContained && word.charAt(pos) != letter.toLowerCase().charAt(0)){
+                        it.remove();
+                    }
+                    else if (!isContained && word.charAt(pos) == letter.toLowerCase().charAt(0)){
+                        it.remove();
+                    }
+                } else  if (!word.contains(letter.toLowerCase())){
+                    it.remove();
+                }
+
+            }
+
     }
     private String getWordSent(){ //suposam que té la llargàriar adecuada
         String s="";
