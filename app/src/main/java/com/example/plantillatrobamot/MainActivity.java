@@ -40,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, String> wordMap ; //clau paraula sense accents, valor paraula amb accents
     private HashSet<String> possibleSol;
 
+    private class Pair {
+        boolean isContained;
+        UnsortedLinkedListSet<Integer> positions;
+
+        public Pair(boolean isContained, UnsortedLinkedListSet<Integer> positions) {
+            this.isContained = isContained;
+            this.positions = positions;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -263,6 +273,8 @@ public class MainActivity extends AppCompatActivity {
         return wordMap.containsKey(input);
     }
     private void descobrirRestriccions(){
+        restrictions = new UnsortedArrayMapping<String, Pair>(lengthWord);
+
         String letter="";
         int row = highlightedRow - 1;
         for (int i=0; i < lengthWord; i++){
@@ -271,16 +283,23 @@ public class MainActivity extends AppCompatActivity {
             letter = ""+textView.getText();
             UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
             if (set.isEmpty()){
+                restrictions.put(letter, new Pair(false, set));
                 updatePossibleSol(letter, false, i);
                 System.out.println("LA LLETRA "+letter+" NO ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
                 textView.setBackgroundColor(Color.RED);
             } else if (set.contains(i+1)){
+                restrictions.put(letter, new Pair(true, set));
+
                 updatePossibleSol(letter, true, i);
 
                 System.out.println("LA LLETRA "+letter+" TÉ LA POSICIÓ ASSOCIADA "+i);
                 textView.setBackgroundColor(Color.GREEN);
 
             } else {
+                UnsortedLinkedListSet setvoid = new UnsortedLinkedListSet<Integer>();
+                setvoid.add(-1);
+                restrictions.put(letter, new Pair(true,setvoid));
+
                 updatePossibleSol(letter, true, -1);
                 System.out.println("LA LLETRA ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
                 textView.setBackgroundColor(Color.YELLOW);
