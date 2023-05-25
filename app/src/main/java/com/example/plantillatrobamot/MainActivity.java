@@ -40,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, String> wordMap ; //clau paraula sense accents, valor paraula amb accents
     private HashSet<String> possibleSol;
 
-    private class Pair {
+    private class UserLetter {
         boolean isContained;
         UnsortedLinkedListSet<Integer> positions;
 
-        public Pair(boolean isContained, UnsortedLinkedListSet<Integer> positions) {
+        public UserLetter(boolean isContained, UnsortedLinkedListSet<Integer> positions) {
             this.isContained = isContained;
             this.positions = positions;
         }
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     //FI DE JOC
                 } else if (isValid()){
                     System.out.println("HEM TROBAT PARAULA VÁLIDA");
-                    descobrirRestriccions();
+                    discoverRestrictions();
                 } else {
                     System.out.println("PARAULA NO VALIDA");
                 }
@@ -272,8 +272,8 @@ public class MainActivity extends AppCompatActivity {
         String input = getWordSent().toLowerCase();
         return wordMap.containsKey(input);
     }
-    private void descobrirRestriccions(){
-        restrictions = new UnsortedArrayMapping<String, Pair>(lengthWord);
+    private void discoverRestrictions(){
+        restrictions = new UnsortedArrayMapping<String, UserLetter>(lengthWord);
 
         String letter="";
         int row = highlightedRow - 1;
@@ -283,12 +283,12 @@ public class MainActivity extends AppCompatActivity {
             letter = ""+textView.getText();
             UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
             if (set.isEmpty()){
-                restrictions.put(letter, new Pair(false, set));
+                restrictions.put(letter, new UserLetter(false, set));
                 updatePossibleSol(letter, false, i);
                 System.out.println("LA LLETRA "+letter+" NO ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
                 textView.setBackgroundColor(Color.RED);
             } else if (set.contains(i+1)){
-                restrictions.put(letter, new Pair(true, set));
+                restrictions.put(letter, new UserLetter(true, set));
 
                 updatePossibleSol(letter, true, i);
 
@@ -298,21 +298,37 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 UnsortedLinkedListSet setvoid = new UnsortedLinkedListSet<Integer>();
                 setvoid.add(-1);
-                restrictions.put(letter, new Pair(true,setvoid));
+                restrictions.put(letter, new UserLetter(true,setvoid));
 
                 updatePossibleSol(letter, true, -1);
                 System.out.println("LA LLETRA ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
                 textView.setBackgroundColor(Color.YELLOW);
             }
         }
-        updateViewNombreSol();
+
     }
+    /*
+    private void updatePossibleSolBasedRestrictions(){
+        Iterator<UnsortedArrayMapping.Pair> it = restrictions.iterator();
+
+        while (it.hasNext()){
+            UnsortedArrayMapping.Pair p =  it.next();
+            String letter = (String) p.getKey();
+            UserLetter userLetter = (UserLetter) p.getValue();
+            updatePossibleSol(letter, userLetter.isContained, -1);
+        }
+
+        updateViewNombreSol();
+    }*/
+
     private void updatePossibleSol(String letter, boolean isContained, int pos){
         Iterator<String> it = possibleSol.iterator();
 
             while (it.hasNext()) {
                 String word = it.next();
-                if (pos != -1) {
+                if (pos != -1) { //si la lletra introduida per l'usuari té posicions
+                    //si aquesta lletra es troba continguda a la paraula a adivinar i no coincideix amb
+                    // la lletra i-èsima de la paraula de posibles solucions
                     if (isContained && word.charAt(pos) != letter.toLowerCase().charAt(0)){
                         it.remove();
                     }
