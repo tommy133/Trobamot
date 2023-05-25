@@ -3,6 +3,7 @@ package com.example.plantillatrobamot;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -26,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
     private int lengthWord = 5;
     private int maxTry = 6;
-
     private int id_nsol = Integer.valueOf(maxTry+""+lengthWord);
     private String guess = "BLANA";
 
@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
     private int heightDisplay;
+    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    //Estructures de dades
 
     GradientDrawable gd, gradientHighlight;
     private UnsortedArrayMapping letters, restrictions;
@@ -97,6 +99,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void crearGraella() {
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
+
+        // Definir les característiques del "pinzell"
+        GradientDrawable gd = new GradientDrawable();
+        gd.setCornerRadius(5);
+        gd.setStroke(3, Color.parseColor(grayColor));
 
         for (int i=0; i < maxTry; i++){
             for (int j=0; j < lengthWord; j++){
@@ -222,6 +229,10 @@ public class MainActivity extends AppCompatActivity {
         });
         buttonEnviar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                /*Intent intent = new Intent (MainActivity.this, FinalActivity.class) ;
+                String message = "Has perdut !";
+                intent.putExtra(EXTRA_MESSAGE,message ) ;
+                startActivity ( intent ) ;*/
                 if (!isLongOk()){
                     Context context = getApplicationContext() ;
                     CharSequence text = "TE FALTEN "+(lengthWord-highlightedColumn)+" LLETRES";
