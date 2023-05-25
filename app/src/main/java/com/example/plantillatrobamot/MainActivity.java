@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 textView.setWidth(textViewSize);
                 textView.setHeight(textViewSize);
                 // Posicionam el TextView
-                textView.setX((widthDisplay/3 - textViewSize/2)+j*textViewSize);
-                textView.setY((heightDisplay/2 - textViewSize/2)+i*textViewSize);
+                textView.setX((widthDisplay/3 - textViewSize/2 -130)+j*(textViewSize+10));
+                textView.setY((heightDisplay/2 - 6*textViewSize)+i*(textViewSize+10));
                 textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                 textView.setTextColor(Color.BLACK);
                 textView.setTextSize(30);
@@ -121,11 +121,12 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
         TextView textView = new TextView(this);
         textView.setId(id_nsol);
-        textView.setWidth(textViewSize*2);
+        textView.setWidth(textViewSize*5);
         textView.setHeight(textViewSize);
-        textView.setX((widthDisplay/3 - textViewSize/2)+textViewSize);
-        textView.setY((heightDisplay/2 - textViewSize/2)+textViewSize);
+        textView.setX((widthDisplay/3 - textViewSize/2) -100);
+        textView.setY((heightDisplay/2 - textViewSize/2) + textViewSize);
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        textView.setTextSize(20);
 
         //textView.setTextSize(30);
         textView.setText("Hi ha "+possibleSol.size()+" solucions disponibles");
@@ -151,17 +152,17 @@ public class MainActivity extends AppCompatActivity {
         // Posicionar el botó
         int buttonWidth = 250;
         int buttonHeight = 100;
-        int buttonKeyboardWidth = 100;
-        int buttonKeyboardHeight = 100;
+        int buttonKeyboardWidth = 120;
+        int buttonKeyboardHeight = 120;
         ConstraintLayout.LayoutParams paramsControlBtn = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
         paramsControlBtn.height = buttonHeight;
         paramsControlBtn.width = buttonWidth;
         buttonEsborrar.setLayoutParams(paramsControlBtn);
-        buttonEsborrar.setY(heightDisplay -400 - buttonHeight);
+        buttonEsborrar.setY(heightDisplay -350 - buttonHeight);
         buttonEsborrar.setX(widthDisplay/2 -100 - buttonWidth/2);
 
         buttonEnviar.setLayoutParams(paramsControlBtn);
-        buttonEnviar.setY(heightDisplay -400 - buttonHeight);
+        buttonEnviar.setY(heightDisplay -350 - buttonHeight);
         buttonEnviar.setX(widthDisplay/2 -50 + buttonWidth/2);
         // Afegir el botó al layout
         constraintLayout.addView(buttonEsborrar);
@@ -212,11 +213,11 @@ public class MainActivity extends AppCompatActivity {
             button.setText(l);
             button.setLayoutParams(paramsKeyboardBtn);
             button.setX(col * buttonKeyboardWidth);
-            button.setY(row * buttonKeyboardHeight);
+            button.setY(row * buttonKeyboardHeight +1600);
             constraintLayout.addView(button);
 
             col++;
-            if (col >= 10) {
+            if (col >= 9) {
                 col = 0;
                 row++;
             }
@@ -305,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
                 textView.setBackgroundColor(Color.YELLOW);
             }
         }
-
+        updateViewNombreSol();
     }
     /*
     private void updatePossibleSolBasedRestrictions(){
@@ -355,12 +356,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initAlphabet(){
-        letters = new UnsortedArrayMapping<String, UnsortedLinkedListSet<Integer>>(26);
+        letters = new UnsortedArrayMapping<String, UnsortedLinkedListSet<Integer>>(27);
 
         for (int i=65; i<65+26;i++){
             char l = (char) i;
             letters.put(Character.toString(l), new UnsortedLinkedListSet<Integer>());
         }
+        letters.put(Character.toString('Ç'), new UnsortedLinkedListSet<Integer>());
+
     }
     //retorna la llista enllaçada amb les posicions de la lletra a endevinar o una llista buida
     private void setPositionsGuessLetters(){
