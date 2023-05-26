@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (isValid()){
                     System.out.println("HEM TROBAT PARAULA VÁLIDA");
                     discoverRestrictions();
+                    updatePossibleSolBasedRestrictions();
                 } else {
                     System.out.println("PARAULA NO VALIDA");
                 }
@@ -282,33 +283,44 @@ public class MainActivity extends AppCompatActivity {
             String id = row + "" +i ;
             TextView textView = findViewById(Integer.valueOf(id).intValue());
             letter = ""+textView.getText();
-            UnsortedLinkedListSet set = (UnsortedLinkedListSet) letters.get(letter);
-            if (set.isEmpty()){
-                restrictions.put(letter, new UserLetter(false, set));
-                updatePossibleSol(letter, false, i);
-                System.out.println("LA LLETRA "+letter+" NO ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
+            UnsortedLinkedListSet setGuessWord = (UnsortedLinkedListSet) letters.get(letter);
+            UnsortedLinkedListSet setPositionsUserLetter;// = restrictions.get(letter)!=null ? (UnsortedLinkedListSet) restrictions.get(letter) : new UnsortedLinkedListSet();
+            if (restrictions.get(letter)!=null){
+                UserLetter userLetter = (UserLetter) restrictions.get(letter);
+                setPositionsUserLetter = (UnsortedLinkedListSet) userLetter.positions;
+                System.out.println(setPositionsUserLetter);
+            } else {
+                setPositionsUserLetter = new UnsortedLinkedListSet();
+            }
+            System.out.println(setPositionsUserLetter);
+            if (setGuessWord.isEmpty()){
+                //LA LLETRA NO ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR
+
+                setPositionsUserLetter.add(i);
+                restrictions.put(letter, new UserLetter(false,setPositionsUserLetter));
+                //updatePossibleSol(letter, false, i);
                 textView.setBackgroundColor(Color.RED);
-            } else if (set.contains(i+1)){
-                restrictions.put(letter, new UserLetter(true, set));
 
-                updatePossibleSol(letter, true, i);
+            } else if (setGuessWord.contains(i+1)){
+                //LA LLETRA TÉ LA POSICIÓ IÈSSIMA ASSOCIADA
+                setPositionsUserLetter.add(i);
+                restrictions.put(letter, new UserLetter(true, setPositionsUserLetter));
+                //updatePossibleSol(letter, true, i);
 
-                System.out.println("LA LLETRA "+letter+" TÉ LA POSICIÓ ASSOCIADA "+i);
                 textView.setBackgroundColor(Color.GREEN);
 
             } else {
-                UnsortedLinkedListSet setvoid = new UnsortedLinkedListSet<Integer>();
-                setvoid.add(-1);
-                restrictions.put(letter, new UserLetter(true,setvoid));
+                //LA LLETRA ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR
+                setPositionsUserLetter.add(-1);
+                restrictions.put(letter, new UserLetter(true, setPositionsUserLetter));
 
-                updatePossibleSol(letter, true, -1);
-                System.out.println("LA LLETRA ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR");
+                //updatePossibleSol(letter, true, -1);
                 textView.setBackgroundColor(Color.YELLOW);
             }
         }
-        updateViewNombreSol();
+        //updateViewNombreSol();
     }
-    /*
+
     private void updatePossibleSolBasedRestrictions(){
         Iterator<UnsortedArrayMapping.Pair> it = restrictions.iterator();
 
@@ -316,31 +328,36 @@ public class MainActivity extends AppCompatActivity {
             UnsortedArrayMapping.Pair p =  it.next();
             String letter = (String) p.getKey();
             UserLetter userLetter = (UserLetter) p.getValue();
-            updatePossibleSol(letter, userLetter.isContained, -1);
+            Iterator<Integer> it2 = userLetter.positions.iterator();
+            while (it2.hasNext()){
+                Integer position = (Integer) it2.next();
+                updatePossibleSol(letter, userLetter.isContained, position);
+            }
+            //updatePossibleSol(letter, userLetter.isContained, userLetter.position);
         }
 
         updateViewNombreSol();
-    }*/
+    }
 
     private void updatePossibleSol(String letter, boolean isContained, int pos){
         Iterator<String> it = possibleSol.iterator();
 
-            while (it.hasNext()) {
-                String word = it.next();
-                if (pos != -1) { //si la lletra introduida per l'usuari té posicions
-                    //si aquesta lletra es troba continguda a la paraula a adivinar i no coincideix amb
-                    // la lletra i-èsima de la paraula de posibles solucions
-                    if (isContained && word.charAt(pos) != letter.toLowerCase().charAt(0)){
-                        it.remove();
-                    }
-                    else if (!isContained && word.charAt(pos) == letter.toLowerCase().charAt(0)){
-                        it.remove();
-                    }
-                } else  if (!word.contains(letter.toLowerCase())){
+        while (it.hasNext()) {
+            String word = it.next();
+            if (pos != -1) { //si la lletra introduida per l'usuari té posicions
+                //si aquesta lletra es troba continguda a la paraula a adivinar i no coincideix amb
+                // la lletra i-èsima de la paraula de posibles solucions
+                if (isContained && word.charAt(pos) != letter.toLowerCase().charAt(0)){
                     it.remove();
                 }
-
+                else if (!isContained && word.charAt(pos) == letter.toLowerCase().charAt(0)){
+                    it.remove();
+                }
+            } else  if (!word.contains(letter.toLowerCase())){
+                it.remove();
             }
+
+        }
 
     }
     private String getWordSent(){ //suposam que té la llargàriar adecuada
