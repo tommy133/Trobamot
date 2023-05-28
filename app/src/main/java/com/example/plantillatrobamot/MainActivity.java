@@ -3,6 +3,7 @@ package com.example.plantillatrobamot;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -221,15 +223,24 @@ public class MainActivity extends AppCompatActivity {
         buttonEnviar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (!isLongOk()){
-                    System.out.println("ERROR TE FALTEN LLETRES TT");
+                    Context context = getApplicationContext() ;
+                    CharSequence text = "TE FALTEN "+(lengthWord-highlightedColumn)+" LLETRES";
+                    int duration = Toast.LENGTH_LONG;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
                 } else if (isParaula()) {
                     //FI DE JOC
                 } else if (isValid()){
-                    System.out.println("HEM TROBAT PARAULA VÁLIDA");
                     discoverRestrictions();
                     updatePossibleSolBasedRestrictions();
                 } else {
-                    System.out.println("PARAULA NO VALIDA");
+                    Context context = getApplicationContext() ;
+                    CharSequence text = "PARAULA NO VÀLIDA!";
+                    int duration = Toast.LENGTH_LONG;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
                 }
             }
         });
@@ -362,7 +373,6 @@ public class MainActivity extends AppCompatActivity {
                 Integer position = (Integer) it2.next();
                 updatePossibleSol(letter, userLetter.isContained, position);
             }
-            //updatePossibleSol(letter, userLetter.isContained, userLetter.position);
         }
 
         updateViewNombreSol();
