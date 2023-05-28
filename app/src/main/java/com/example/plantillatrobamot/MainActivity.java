@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
     private int heightDisplay;
+
+    GradientDrawable gd, gradientHighlight;
     private UnsortedArrayMapping letters, restrictions;
     private HashMap<String, String> wordMap ; //clau paraula sense accents, valor paraula amb accents
     private HashSet<String> possibleSol;
@@ -62,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
         widthDisplay = metrics.widthPixels;
         heightDisplay = metrics.heightPixels;
 
+        // Definir les característiques del "pinzell"
+        gd = new GradientDrawable();
+        gd.setCornerRadius(5);
+        gd.setStroke(3, Color.parseColor(grayColor));
+
+        gradientHighlight = new GradientDrawable();
+        gradientHighlight.setCornerRadius(5);
+        gradientHighlight.setStroke(3, Color.YELLOW);
+
         try {
             iniciarDiccionari();
         } catch (IOException e) {
@@ -85,36 +96,50 @@ public class MainActivity extends AppCompatActivity {
     private void crearGraella() {
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
 
-        // Definir les característiques del "pinzell"
-        GradientDrawable gd = new GradientDrawable();
-        gd.setCornerRadius(5);
-        gd.setStroke(3, Color.parseColor(grayColor));
-
         for (int i=0; i < maxTry; i++){
             for (int j=0; j < lengthWord; j++){
-                // Crear un TextView
-                TextView textView = new TextView(this);
-                textView.setBackground(gd);
-                textView.setId(Integer.valueOf(i+""+j));
-                textView.setWidth(textViewSize);
-                textView.setHeight(textViewSize);
-                // Posicionam el TextView
-                textView.setX((widthDisplay/3 - textViewSize/2 -130)+j*(textViewSize+10));
-                textView.setY((heightDisplay/2 - 6*textViewSize)+i*(textViewSize+10));
-                textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-                textView.setTextColor(Color.BLACK);
-                textView.setTextSize(30);
-                // Afegir el TextView al layout
-                constraintLayout.addView(textView);
+                createCell(i, j, gd, constraintLayout);
             }
         }
-        /*
-        //Highlighteam sa primera casella
+        highLightCell();
+    }
+
+    private void createCell(int i, int j, GradientDrawable gd, ConstraintLayout layout){
+        // Crear un TextView
+        TextView textView = new TextView(this);
+        textView.setBackground(gd);
+        textView.setId(Integer.valueOf(i+""+j));
+        textView.setWidth(textViewSize);
+        textView.setHeight(textViewSize);
+        // Posicionam el TextView
+        textView.setX((widthDisplay/3 - textViewSize/2 -130)+j*(textViewSize+10));
+        textView.setY((heightDisplay/2 - 6*textViewSize)+i*(textViewSize+10));
+        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        textView.setTextColor(Color.BLACK);
+        textView.setTextSize(30);
+        // Afegir el TextView al layout
+        layout.addView(textView);
+    }
+
+    private void highLightCell(){
         String id = highlightedRow + "" +highlightedColumn ;
         TextView textView = findViewById(Integer.valueOf(id).intValue());
-        GradientDrawable gdFirst = (GradientDrawable) textView.getBackground();
-        gdFirst.setStroke(3, Color.YELLOW);
-        System.out.println("TAMARE");*/
+
+        textView.setBackground(gradientHighlight);
+
+        int tmpHighlightedRow = highlightedRow;
+        int tmpHighlightedColumn = highlightedColumn;
+        tmpHighlightedColumn--;
+        if (tmpHighlightedColumn < 0) {
+            tmpHighlightedColumn = lengthWord-1;
+            tmpHighlightedRow--;
+        }
+        String idPrev = tmpHighlightedRow + "" +tmpHighlightedColumn ;
+        TextView textViewPrev = findViewById(Integer.valueOf(idPrev).intValue());
+        if (textViewPrev != null){
+            textViewPrev.setBackground(gd);
+        }
+
     }
 
     private void crearNombreSol(){
@@ -172,15 +197,21 @@ public class MainActivity extends AppCompatActivity {
         // Afegir la funcionalitat al botó
         buttonEsborrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                String idCurrent = highlightedRow + "" +highlightedColumn ;
+                TextView textViewCurrent = findViewById(Integer.valueOf(idCurrent).intValue());
+                textViewCurrent.setBackground(gd);
+
                 highlightedColumn--;
                 if (highlightedColumn < 0) {
-                    highlightedColumn = lengthWord;
+                    highlightedColumn = lengthWord-1;
                     highlightedRow--;
                 }
+
                 String id = highlightedRow + "" +highlightedColumn ;
                 TextView textView = findViewById(Integer.valueOf(id).intValue());
                 if (textView!=null){
                     textView.setText("");
+                    textView.setBackground(gradientHighlight);
                 }
 
             }
@@ -236,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
                         highlightedColumn = 0;
                         highlightedRow++;
                     }
+                    highLightCell();
                 }
             });
         }
