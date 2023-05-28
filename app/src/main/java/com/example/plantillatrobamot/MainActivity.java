@@ -124,8 +124,10 @@ public class MainActivity extends AppCompatActivity {
     private void highLightCell(){
         String id = highlightedRow + "" +highlightedColumn ;
         TextView textView = findViewById(Integer.valueOf(id).intValue());
+        if (textView != null){
+            textView.setBackground(gradientHighlight);
 
-        textView.setBackground(gradientHighlight);
+        }
 
         int tmpHighlightedRow = highlightedRow;
         int tmpHighlightedColumn = highlightedColumn;
@@ -324,20 +326,17 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 setPositionsUserLetter = new UnsortedLinkedListSet();
             }
-            System.out.println(setPositionsUserLetter);
             if (setGuessWord.isEmpty()){
                 //LA LLETRA NO ES TROBA CONTINGUDA A LA PARAULA A ENDEVINAR
 
                 setPositionsUserLetter.add(i);
                 restrictions.put(letter, new UserLetter(false,setPositionsUserLetter));
-                //updatePossibleSol(letter, false, i);
                 textView.setBackgroundColor(Color.RED);
 
             } else if (setGuessWord.contains(i+1)){
                 //LA LLETRA TÉ LA POSICIÓ IÈSSIMA ASSOCIADA
                 setPositionsUserLetter.add(i);
                 restrictions.put(letter, new UserLetter(true, setPositionsUserLetter));
-                //updatePossibleSol(letter, true, i);
 
                 textView.setBackgroundColor(Color.GREEN);
 
@@ -346,11 +345,9 @@ public class MainActivity extends AppCompatActivity {
                 setPositionsUserLetter.add(-1);
                 restrictions.put(letter, new UserLetter(true, setPositionsUserLetter));
 
-                //updatePossibleSol(letter, true, -1);
                 textView.setBackgroundColor(Color.YELLOW);
             }
         }
-        //updateViewNombreSol();
     }
 
     private void updatePossibleSolBasedRestrictions(){
