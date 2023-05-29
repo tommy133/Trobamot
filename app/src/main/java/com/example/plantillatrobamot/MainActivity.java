@@ -229,10 +229,6 @@ public class MainActivity extends AppCompatActivity {
         });
         buttonEnviar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                /*Intent intent = new Intent (MainActivity.this, FinalActivity.class) ;
-                String message = "Has perdut !";
-                intent.putExtra(EXTRA_MESSAGE,message ) ;
-                startActivity ( intent ) ;*/
                 if (!isLongOk()){
                     Context context = getApplicationContext() ;
                     CharSequence text = "TE FALTEN "+(lengthWord-highlightedColumn)+" LLETRES";
@@ -243,6 +239,14 @@ public class MainActivity extends AppCompatActivity {
                 } else if (isParaula()) {
                     //FI DE JOC
                 } else if (isValid()){
+                    if (highlightedRow == maxTry){
+                        Context context = getApplicationContext() ;
+                        CharSequence text = "INTENTS ESGOTATS";
+                        int duration = Toast.LENGTH_LONG;
+
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    }
                     discoverRestrictions();
                     updatePossibleSolBasedRestrictions();
                 } else {
