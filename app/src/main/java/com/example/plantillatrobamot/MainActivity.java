@@ -237,7 +237,14 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                 } else if (isParaula()) {
-                    //FI DE JOC
+                    Context context = getApplicationContext() ;
+                    CharSequence text = "ENHORABONA!";
+                    int duration = Toast.LENGTH_LONG;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+
+                    endGame(true);
                 } else if (isValid()){
                     if (highlightedRow == maxTry){
                         Context context = getApplicationContext() ;
@@ -246,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.show();
+
+                        endGame(false);
                     }
                     discoverRestrictions();
                     updatePossibleSolBasedRestrictions();
@@ -329,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         return highlightedColumn==0 & highlightedRow > 0;
     }
 
-    private boolean isParaula(){return false;}
+    private boolean isParaula(){return true;}
     private boolean isValid(){
         String input = getWordSent().toLowerCase();
         return wordMap.containsKey(input);
@@ -446,6 +455,16 @@ public class MainActivity extends AppCompatActivity {
             letters.put(letter, set);
         }
     }
+
+    public void endGame(boolean winner) {
+        Intent intent=new Intent(this, FinalActivity.class);
+        //intent.putExtra("PALABRA", diccionario.get(palabraSolucion));
+        intent.putExtra("VICTORIA", winner);
+        /*intent.putExtra("RESTRICCIONES", setTextRest());
+        intent.putExtra("POSIBLES_SOLUCIONES", palabrasPosiblesToString());*/
+        startActivity(intent);
+    }
+
     private void hideSystemUI() {
         // Enables regular immersive mode.
         // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
