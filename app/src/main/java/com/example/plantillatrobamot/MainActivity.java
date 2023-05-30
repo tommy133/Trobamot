@@ -22,6 +22,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
@@ -338,7 +341,10 @@ public class MainActivity extends AppCompatActivity {
         return highlightedColumn==0 & highlightedRow > 0;
     }
 
-    private boolean isParaula(){return true;}
+    private boolean isParaula(){
+        String input = getWordSent();
+        return input.equals(guess);
+    }
     private boolean isValid(){
         String input = getWordSent().toLowerCase();
         return wordMap.containsKey(input);
@@ -458,11 +464,59 @@ public class MainActivity extends AppCompatActivity {
 
     public void endGame(boolean winner) {
         Intent intent=new Intent(this, FinalActivity.class);
-        //intent.putExtra("PALABRA", diccionario.get(palabraSolucion));
+        intent.putExtra("WORD", guess);
         intent.putExtra("VICTORIA", winner);
-        /*intent.putExtra("RESTRICCIONES", setTextRest());
-        intent.putExtra("POSIBLES_SOLUCIONES", palabrasPosiblesToString());*/
+        //intent.putExtra("RESTRICCIONES", setTextRest());
+        intent.putExtra("POSIBLES_SOLUCIONES", getPossibleSolWords());
         startActivity(intent);
+    }
+
+    /*private String setTextRest() {
+        TextView textoRest = findViewById(R.id.textRestrictions);
+        StringBuilder texto = new StringBuilder("Restriccions: ");
+        // Iterador de las restricciones
+        Iterator itRestricciones = restrictions.iterator();
+        while (itRestricciones.hasNext()) {
+
+            UserLetter userLetter = (UserLetter) itRestricciones.next();
+            UnsortedLinkedListSet<Integer> posiciones = userLetter.positions;
+            Iterator itPosiciones = posiciones.iterator();
+            String aux = ""+restriccion.getKey();
+            while (itPosiciones.hasNext()) {
+                // Obtener posición de la restricción
+                int posRestriccion = (int) itPosiciones.next();
+
+                // Comprobar si la letra de la restricción esta en la solución
+                if (posRestriccion == 0) {
+                    texto.append("no ha de contenir la ").append(aux.toUpperCase()).append(", ");
+                } else {
+                    // La letra está en la palabra solución
+                    if (posRestriccion > 0) {
+                        texto.append("ha de contenir la ").append(aux.toUpperCase()).append(" a la posició ").append(posRestriccion).append(", ");
+                    } else {
+                        // La letra está en la palabra, pero no en la posición
+                        texto.append("no ha de contenir la ").append(aux.toUpperCase()).append(" a la posició ").append(-posRestriccion).append(", ");
+                    }
+                }
+            }
+        }
+        // Eliminamos la última coma y ponemos un punto
+        texto.setCharAt(texto.length()-2, '.');
+
+        return texto.toString();
+
+
+    }*/
+
+    private String getPossibleSolWords() {
+        Iterator it = possibleSol.iterator();
+        StringBuilder st = new StringBuilder("Paraules possibles: " + it.next());
+
+        while (it.hasNext()) {
+            st.append(", " + it.next());
+        }
+
+        return st.toString();
     }
 
     private void hideSystemUI() {
