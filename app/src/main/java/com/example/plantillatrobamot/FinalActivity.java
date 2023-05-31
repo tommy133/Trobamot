@@ -30,8 +30,8 @@ public class FinalActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         win = intent.getBooleanExtra("VICTORIA",false);
         word = intent.getStringExtra("WORD").toLowerCase();
-        restricciones = intent.getStringExtra("RESTRICCIONES");
-        posiblesSoluciones = intent.getStringExtra("POSIBLES_SOLUCIONES");
+        restricciones = intent.getStringExtra("RESTRICCIONS");
+        posiblesSoluciones = intent.getStringExtra("POSIBLES_SOL");
 
         finalScreen();
     }
@@ -76,13 +76,13 @@ public class FinalActivity extends AppCompatActivity {
         posible.setMovementMethod(new ScrollingMovementMethod());
         posible.setText(ss);
 
-        /*SpannableString ss2 = new SpannableString(restricciones);
+        SpannableString ss2 = new SpannableString(restricciones);
         StyleSpan boldSpan2 = new StyleSpan(Typeface.BOLD);
         ss2.setSpan(boldSpan2, 0, restricciones.indexOf(":"), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         // Poner texto
         TextView restric = findViewById(R.id.textRestrictions);
         restric.setMovementMethod(new ScrollingMovementMethod());
-        restric.setText(ss2);*/
+        restric.setText(ss2);
 
     }
 

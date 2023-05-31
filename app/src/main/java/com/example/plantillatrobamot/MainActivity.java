@@ -19,12 +19,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+/**
+ * Wordle application
+ *
+ * See also in https://github.com/tommy133/Trobamot
+ *
+ * @author  Tomeu Estrany
+ * @version 1.0
+ *
+ */
+//You can also see it visiting https://github.com/tommy133/Trobamot
 
 public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
@@ -41,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
     public static String grayColor = "#D9E1E8";
     private int widthDisplay;
     private int heightDisplay;
-    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
-    //Estructures de dades
 
+    //Estructures de dades
     GradientDrawable gd, gradientHighlight;
-    private UnsortedArrayMapping letters, restrictions;
+    private UnsortedArrayMapping letters;
+    private UnsortedArrayMapping restrictions = new UnsortedArrayMapping<String, UserLetter>(lengthWord*maxTry);
     private HashMap<String, String> wordMap ; //clau paraula sense accents, valor paraula amb accents
     private HashSet<String> possibleSol;
 
@@ -350,8 +361,6 @@ public class MainActivity extends AppCompatActivity {
         return wordMap.containsKey(input);
     }
     private void discoverRestrictions(){
-        restrictions = new UnsortedArrayMapping<String, UserLetter>(lengthWord);
-
         String letter="";
         int row = highlightedRow - 1;
         for (int i=0; i < lengthWord; i++){
@@ -466,47 +475,48 @@ public class MainActivity extends AppCompatActivity {
         Intent intent=new Intent(this, FinalActivity.class);
         intent.putExtra("WORD", guess);
         intent.putExtra("VICTORIA", winner);
-        //intent.putExtra("RESTRICCIONES", setTextRest());
-        intent.putExtra("POSIBLES_SOLUCIONES", getPossibleSolWords());
+        intent.putExtra("RESTRICCIONS", setTextRest());
+        intent.putExtra("POSIBLES_SOL", getPossibleSolWords());
         startActivity(intent);
     }
 
-    /*private String setTextRest() {
-        TextView textoRest = findViewById(R.id.textRestrictions);
+    private String setTextRest() {
         StringBuilder texto = new StringBuilder("Restriccions: ");
-        // Iterador de las restricciones
-        Iterator itRestricciones = restrictions.iterator();
-        while (itRestricciones.hasNext()) {
-
-            UserLetter userLetter = (UserLetter) itRestricciones.next();
+        Iterator<UnsortedArrayMapping.Pair> it = restrictions.iterator();
+        //soc concient de que l'he liada i necessitaria una implementació amb un conjunt, 31/5/23
+        ArrayList hack = new ArrayList();
+        while (it.hasNext()) {
+            UnsortedArrayMapping.Pair p =  it.next();
+            UserLetter userLetter = (UserLetter) p.getValue();
             UnsortedLinkedListSet<Integer> posiciones = userLetter.positions;
-            Iterator itPosiciones = posiciones.iterator();
-            String aux = ""+restriccion.getKey();
-            while (itPosiciones.hasNext()) {
-                // Obtener posición de la restricción
-                int posRestriccion = (int) itPosiciones.next();
 
-                // Comprobar si la letra de la restricción esta en la solución
-                if (posRestriccion == 0) {
-                    texto.append("no ha de contenir la ").append(aux.toUpperCase()).append(", ");
-                } else {
-                    // La letra está en la palabra solución
-                    if (posRestriccion > 0) {
-                        texto.append("ha de contenir la ").append(aux.toUpperCase()).append(" a la posició ").append(posRestriccion).append(", ");
+            Iterator itPos = posiciones.iterator();
+            String aux = ""+p.getKey();
+
+                while (itPos.hasNext()) {
+                    int posRestriction = (int) itPos.next();
+
+                    if (userLetter.isContained) {
+                        if (posRestriction >= 0){
+                            texto.append("ha de contenir la ").append(aux.toUpperCase()).append(" a la posició ").append(posRestriction+1).append(", ");
+                        }
                     } else {
-                        // La letra está en la palabra, pero no en la posición
-                        texto.append("no ha de contenir la ").append(aux.toUpperCase()).append(" a la posició ").append(-posRestriccion).append(", ");
+                        if (!hack.contains(aux)){
+                            texto.append("no ha de contenir la ").append(aux.toUpperCase()).append(", ");
+                            hack.add(aux);
+                        }
                     }
+
                 }
-            }
+
+
         }
-        // Eliminamos la última coma y ponemos un punto
         texto.setCharAt(texto.length()-2, '.');
 
         return texto.toString();
 
 
-    }*/
+    }
 
     private String getPossibleSolWords() {
         Iterator it = possibleSol.iterator();
