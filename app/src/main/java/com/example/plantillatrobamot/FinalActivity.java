@@ -20,7 +20,7 @@ import java.net.URL;
 
 public class FinalActivity extends AppCompatActivity {
     private boolean win;
-    private String word, restricciones, posiblesSoluciones;
+    private String word, restrictions, possibleSol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,17 +30,18 @@ public class FinalActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         win = intent.getBooleanExtra("VICTORIA",false);
         word = intent.getStringExtra("WORD").toLowerCase();
-        restricciones = intent.getStringExtra("RESTRICCIONS");
-        posiblesSoluciones = intent.getStringExtra("POSIBLES_SOL");
+        restrictions = intent.getStringExtra("RESTRICCIONS");
+        possibleSol = intent.getStringExtra("POSIBLES_SOL");
 
         finalScreen();
+
     }
 
     private void finalScreen() {
         TextView finalText = findViewById(R.id.finalText);
-        TextView textoPalabra = findViewById(R.id.wordText);
+        TextView wordText = findViewById(R.id.wordText);
 
-        textoPalabra.setText(word);
+        wordText.setText(word);
         if (win) {
             finalText.setText("Enhorabona!");
             TextView posible = findViewById(R.id.textPossibleSol);
@@ -54,9 +55,9 @@ public class FinalActivity extends AppCompatActivity {
             @Override
             public void run () {
                 try {
-                    TextView definicion = findViewById(R.id.textoDefPalabra);
-                    definicion.setMovementMethod(new ScrollingMovementMethod());
-                    definicion.setText(Html.fromHtml(AgafaHTML().toString()));
+                    TextView definition = findViewById(R.id.textoDefPalabra);
+                    definition.setMovementMethod(new ScrollingMovementMethod());
+                    definition.setText(Html.fromHtml(agafaHTML().toString()));
 
                 } catch ( Exception e ) {
                     e.printStackTrace();
@@ -67,30 +68,28 @@ public class FinalActivity extends AppCompatActivity {
 
     }
     private void modificarStrings() {
-        // Dar formato al texto (negrita)
-        SpannableString ss = new SpannableString(posiblesSoluciones);
+        SpannableString ss = new SpannableString(possibleSol);
         StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
         ss.setSpan(boldSpan, 0, 18, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        // Poner texto
+
         TextView posible = findViewById(R.id.textPossibleSol);
         posible.setMovementMethod(new ScrollingMovementMethod());
         posible.setText(ss);
 
-        SpannableString ss2 = new SpannableString(restricciones);
+        SpannableString ss2 = new SpannableString(restrictions);
         StyleSpan boldSpan2 = new StyleSpan(Typeface.BOLD);
-        ss2.setSpan(boldSpan2, 0, restricciones.indexOf(":"), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        // Poner texto
+        ss2.setSpan(boldSpan2, 0, restrictions.indexOf(":"), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         TextView restric = findViewById(R.id.textRestrictions);
         restric.setMovementMethod(new ScrollingMovementMethod());
         restric.setText(ss2);
 
     }
 
-    private String AgafaHTML() {
+    private String agafaHTML() {
         String direccion = "https://www.vilaweb.cat/paraulogic/?diec=" + word;
 
         try {
-            // Enlace a internet
             URL definicion = new URL(direccion);
             BufferedReader in = new BufferedReader(new InputStreamReader(definicion.openStream()));
             StringBuffer texto = new StringBuffer();
