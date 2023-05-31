@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 /**
  * Wordle application
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private int lengthWord = 5;
     private int maxTry = 6;
     private int id_nsol = Integer.valueOf(maxTry+""+lengthWord);
-    private String guess = "BLANA";
+    private String guess;
 
     private int highlightedRow = 0;
     private int highlightedColumn = 0;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             iniciarDiccionari();
+            generateGuessWord();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,6 +106,22 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         hideSystemUI();
     }
+
+    private void generateGuessWord() {
+        int n = new Random().nextInt(wordMap.size());
+
+        Iterator<Map.Entry<String, String>> iterator = wordMap.entrySet().iterator();
+        String key = "";
+
+        for (int i = 0; i < n && iterator.hasNext(); i++) {
+            Map.Entry<String, String> entry = iterator.next();
+            key = entry.getKey();
+        }
+
+        guess = key.toUpperCase();
+    }
+
+
 
     private void crearInterficie() {
         crearGraella();
@@ -222,22 +240,23 @@ public class MainActivity extends AppCompatActivity {
         // Afegir la funcionalitat al botó
         buttonEsborrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String idCurrent = highlightedRow + "" +highlightedColumn ;
-                TextView textViewCurrent = findViewById(Integer.valueOf(idCurrent).intValue());
-                textViewCurrent.setBackground(gd);
 
-                highlightedColumn--;
-                if (highlightedColumn < 0) {
-                    highlightedColumn = lengthWord-1;
-                    highlightedRow--;
-                }
+                    String idCurrent = highlightedRow + "" +highlightedColumn ;
+                    TextView textViewCurrent = findViewById(Integer.valueOf(idCurrent).intValue());
+                    textViewCurrent.setBackground(gd);
 
-                String id = highlightedRow + "" +highlightedColumn ;
-                TextView textView = findViewById(Integer.valueOf(id).intValue());
-                if (textView!=null){
-                    textView.setText("");
-                    textView.setBackground(gradientHighlight);
-                }
+                    highlightedColumn--;
+                    if (highlightedColumn < 0) {
+                        highlightedColumn = lengthWord-1;
+                        highlightedRow--;
+                    }
+
+                    String id = highlightedRow + "" +highlightedColumn ;
+                    TextView textView = findViewById(Integer.valueOf(id).intValue());
+                    if (textView!=null){
+                        textView.setText("");
+                        textView.setBackground(gradientHighlight);
+                    }
 
             }
         });
