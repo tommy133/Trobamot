@@ -3,6 +3,7 @@ package com.example.plantillatrobamot;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -18,17 +19,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+/**
+ * Wordle application
+ *
+ * See also in https://github.com/tommy133/Trobamot
+ *
+ * @author  Tomeu Estrany
+ * @version 1.0
+ *
+ */
+//You can also see it visiting https://github.com/tommy133/Trobamot
 
 public class MainActivity extends AppCompatActivity {
     // Variables de lògica del joc
     private int lengthWord = 5;
     private int maxTry = 6;
-
     private int id_nsol = Integer.valueOf(maxTry+""+lengthWord);
-    private String guess = "BLANA";
+    private String guess;
 
     private int highlightedRow = 0;
     private int highlightedColumn = 0;
@@ -39,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
     private int widthDisplay;
     private int heightDisplay;
 
+    //Estructures de dades
     GradientDrawable gd, gradientHighlight;
-    private UnsortedArrayMapping letters, restrictions;
+    private UnsortedArrayMapping letters;
+    private UnsortedArrayMapping restrictions = new UnsortedArrayMapping<String, UserLetter>(lengthWord*maxTry);
     private HashMap<String, String> wordMap ; //clau paraula sense accents, valor paraula amb accents
     private HashSet<String> possibleSol;
 
@@ -77,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             iniciarDiccionari();
+            generateGuessWord();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,6 +107,22 @@ public class MainActivity extends AppCompatActivity {
         hideSystemUI();
     }
 
+    private void generateGuessWord() {
+        int n = new Random().nextInt(wordMap.size());
+
+        Iterator<Map.Entry<String, String>> iterator = wordMap.entrySet().iterator();
+        String key = "";
+
+        for (int i = 0; i < n && iterator.hasNext(); i++) {
+            Map.Entry<String, String> entry = iterator.next();
+            key = entry.getKey();
+        }
+
+        guess = key.toUpperCase();
+    }
+
+
+
     private void crearInterficie() {
         crearGraella();
         crearTeclat();
@@ -97,6 +131,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void crearGraella() {
         ConstraintLayout constraintLayout = findViewById(R.id.layout);
+
+        // Definir les característiques del "pinzell"
+        GradientDrawable gd = new GradientDrawable();
+        gd.setCornerRadius(5);
+        gd.setStroke(3, Color.parseColor(grayColor));
 
         for (int i=0; i < maxTry; i++){
             for (int j=0; j < lengthWord; j++){
@@ -201,22 +240,23 @@ public class MainActivity extends AppCompatActivity {
         // Afegir la funcionalitat al botó
         buttonEsborrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String idCurrent = highlightedRow + "" +highlightedColumn ;
-                TextView textViewCurrent = findViewById(Integer.valueOf(idCurrent).intValue());
-                textViewCurrent.setBackground(gd);
 
-                highlightedColumn--;
-                if (highlightedColumn < 0) {
-                    highlightedColumn = lengthWord-1;
-                    highlightedRow--;
-                }
+                    String idCurrent = highlightedRow + "" +highlightedColumn ;
+                    TextView textViewCurrent = findViewById(Integer.valueOf(idCurrent).intValue());
+                    textViewCurrent.setBackground(gd);
 
-                String id = highlightedRow + "" +highlightedColumn ;
-                TextView textView = findViewById(Integer.valueOf(id).intValue());
-                if (textView!=null){
-                    textView.setText("");
-                    textView.setBackground(gradientHighlight);
-                }
+                    highlightedColumn--;
+                    if (highlightedColumn < 0) {
+                        highlightedColumn = lengthWord-1;
+                        highlightedRow--;
+                    }
+
+                    String id = highlightedRow + "" +highlightedColumn ;
+                    TextView textView = findViewById(Integer.valueOf(id).intValue());
+                    if (textView!=null){
+                        textView.setText("");
+                        textView.setBackground(gradientHighlight);
+                    }
 
             }
         });
@@ -230,8 +270,25 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                 } else if (isParaula()) {
-                    //FI DE JOC
+                    Context context = getApplicationContext() ;
+                    CharSequence text = "ENHORABONA!";
+                    int duration = Toast.LENGTH_LONG;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+
+                    endGame(true);
                 } else if (isValid()){
+                    if (highlightedRow == maxTry){
+                        Context context = getApplicationContext() ;
+                        CharSequence text = "INTENTS ESGOTATS";
+                        int duration = Toast.LENGTH_LONG;
+
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+
+                        endGame(false);
+                    }
                     discoverRestrictions();
                     updatePossibleSolBasedRestrictions();
                 } else {
@@ -314,14 +371,15 @@ public class MainActivity extends AppCompatActivity {
         return highlightedColumn==0 & highlightedRow > 0;
     }
 
-    private boolean isParaula(){return false;}
+    private boolean isParaula(){
+        String input = getWordSent();
+        return input.equals(guess);
+    }
     private boolean isValid(){
         String input = getWordSent().toLowerCase();
         return wordMap.containsKey(input);
     }
     private void discoverRestrictions(){
-        restrictions = new UnsortedArrayMapping<String, UserLetter>(lengthWord);
-
         String letter="";
         int row = highlightedRow - 1;
         for (int i=0; i < lengthWord; i++){
@@ -431,6 +489,65 @@ public class MainActivity extends AppCompatActivity {
             letters.put(letter, set);
         }
     }
+
+    public void endGame(boolean winner) {
+        Intent intent=new Intent(this, FinalActivity.class);
+        intent.putExtra("WORD", guess);
+        intent.putExtra("VICTORIA", winner);
+        intent.putExtra("RESTRICCIONS", setTextRest());
+        intent.putExtra("POSIBLES_SOL", getPossibleSolWords());
+        startActivity(intent);
+    }
+
+    private String setTextRest() {
+        StringBuilder texto = new StringBuilder("Restriccions: ");
+        Iterator<UnsortedArrayMapping.Pair> it = restrictions.iterator();
+        //soc concient de que l'he liada i necessitaria una implementació amb un conjunt, 31/5/23
+        ArrayList hack = new ArrayList();
+        while (it.hasNext()) {
+            UnsortedArrayMapping.Pair p =  it.next();
+            UserLetter userLetter = (UserLetter) p.getValue();
+            UnsortedLinkedListSet<Integer> posiciones = userLetter.positions;
+
+            Iterator itPos = posiciones.iterator();
+            String aux = ""+p.getKey();
+
+                while (itPos.hasNext()) {
+                    int posRestriction = (int) itPos.next();
+
+                    if (userLetter.isContained) {
+                        if (posRestriction >= 0){
+                            texto.append("ha de contenir la ").append(aux.toUpperCase()).append(" a la posició ").append(posRestriction+1).append(", ");
+                        }
+                    } else {
+                        if (!hack.contains(aux)){
+                            texto.append("no ha de contenir la ").append(aux.toUpperCase()).append(", ");
+                            hack.add(aux);
+                        }
+                    }
+
+                }
+
+
+        }
+        texto.setCharAt(texto.length()-2, '.');
+
+        return texto.toString();
+
+
+    }
+
+    private String getPossibleSolWords() {
+        Iterator it = possibleSol.iterator();
+        StringBuilder st = new StringBuilder("Paraules possibles: " + it.next());
+
+        while (it.hasNext()) {
+            st.append(", " + it.next());
+        }
+
+        return st.toString();
+    }
+
     private void hideSystemUI() {
         // Enables regular immersive mode.
         // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
